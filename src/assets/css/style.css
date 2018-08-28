@@ -1,0 +1,201 @@
+html, body{
+    height: 100%;
+}
+.bread{
+	height: 80px;
+	position: relative;
+}
+.input-user{
+    background: url(../img/user.png)  no-repeat;
+    background-position: 4px;
+}
+
+.rm-input{
+    border:0px;
+    background-color: #f7f5fb;
+    outline: none;
+}
+.compact-theme,
+.compact-theme .current{
+	border: none;
+	box-shadow: none;
+	background: #ffffff !important;
+}
+
+.table-head th, td{
+	border: 1px solid #eaeaea;
+}
+
+.border-table th, td{
+	border: 1px solid #eaeaea;
+}
+
+.bt{
+	border: 1px solid #eaeaea;
+}
+
+.bl{
+	border-right:1px solid #eaeaea;
+}
+
+/* 
+#table1 table,
+#table2 table{
+    border: 1px solid #000000;
+    width: 100%;
+}
+
+#talbe1 th,table td,
+#talbe2 th,table,td{
+    border: 1px solid #000000;
+} */
+
+.input-radius{
+    width: 322px;
+    height: 52px;
+    border:0px;
+    /* border: 1px solid #bbb; */
+	background-color: #f7f5fb;
+    border-radius: 34px;
+    outline: none;
+}
+
+.login{
+    width: 364px;
+	height: 409px;
+}
+
+.login-h1{
+	/* width: 164px;
+	height: 51px; */
+	font-family: ArialMT;
+	font-size: 64px;
+	/* font-weight: normal;
+	font-stretch: normal; */
+	line-height: 43px;
+	/* letter-spacing: 0px; */
+	color: #404040;
+}
+
+.table-head th{
+line-height: 2.6rem;
+}
+.table-head{
+	background: #eaeaea;
+	color: #707070;
+}
+
+.login-h2{
+	/* width: 364px;
+	height: 22px; */
+	font-family: ArialMT;
+	font-size: 24px;
+	/* font-weight: normal;
+	font-stretch: normal; */
+	line-height: 43px;
+	/* letter-spacing: 0px; */
+	color: #4d4d4d;
+}
+
+
+.test{
+    border: 2px solid red;
+   
+}
+
+.bg{
+    min-height: 100vh;
+	background: url(../img/bg.png) right 50% no-repeat; 
+}
+
+
+.table{
+	border: none !important;
+}
+.table-striped{
+	border: none;
+}
+.search{
+	height: 37px;
+	
+}
+
+
+.w-85{
+	width: 90%;
+}
+
+.search-input{
+	border:none;
+	outline: none;
+	
+	padding-top: 5px;
+}
+.serach-btn:hover{
+	cursor:pointer;
+}
+/* img:hover {
+    cursor: pointer;
+} */
+
+.search img:hover{
+	cursor:pointer;
+}
+
+.filter a{
+	margin-left: 3rem;
+	display: block;
+	padding: 3px 15px 4px 15px;
+	border-radius: 5px;
+	color: #000000;
+}
+
+.filter label{
+	width: 80px;
+}
+
+.filter a:hover{
+	color: #ffffff;
+	background: #3737e1;
+}
+
+.application .all .all,
+.application .inti .inti,
+.application .ent .ent{
+	color: #ffffff !important;
+	background: #3737e1 !important;
+}
+.filter .active{
+	color: #ffffff !important;
+	background: #3737e1 !important;
+}
+
+.application .all .all,
+.application .pending .pending,
+.application .pass .pass,
+.application .rejt .rejt{
+	color: #ffffff !important;
+	background: #3737e1 !important;
+}
+
+
+
+
+
+/* 
+{
+	"Code": 'testuser',
+	"Pass": '123123',
+	"Type": 'Nothing',
+	"Name": 'evle',
+	"PhtoeUrl": '',
+	"CreditCode": '',
+	"Bank" : '123',
+	"AccountName": '123',
+	"AccountNo" : '123',
+	"Contacts" : '123',
+	"ContactNumber" : '123', 
+	"IsDisabled" :  '1',
+	"RoleList" : '',             
+	"PermissionList":'ssd'
+} */

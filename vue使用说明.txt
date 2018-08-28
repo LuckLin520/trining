@@ -1,0 +1,32 @@
+安装项目	vue init webpack 项目名
+https://www.jianshu.com/p/1626b8643676
+
+? Use ESLint to lint your code? (Y/n) n ---------------------是否启用eslint检测规则，这里个人建议选no
+
+启动项目	npm run dev
+如果没有依赖就安装 npm install
+
+使用 		jquery 如果没有依赖，先安装  ，注意！不是上面的npm install
+		然后在对应中 import $ from 'jquery';
+		或者在  build/webpack.base.conf.js中配置全局属性
+		先 	var webpack=require('webpack');
+		然后 	module.exports 中添加 plugins:[
+		  new webpack.ProvidePlugin({
+		    $:"jquery",
+		    jQuery:"jquery",
+		    "windows.jQuery":"jquery"
+		  })
+		]
+		
+		utils.js ExtractTextPlugin中添加publicPath:'../../' 免得图片css报错
+		
+路由配置在 router/index.js中
+
+jquery axios jsonp 这些如果没有都需要安装 而且好像还要再模块中引入
+
+这里的项目打包是  npm run build
+
+这两个网站有空去看下
+http://element-cn.eleme.io/#/zh-CN/component/installation
+
+https://cn.vuejs.org/v2/guide/migration-vue-router.html#v-link-%E6%9B%BF%E6%8D%A2
