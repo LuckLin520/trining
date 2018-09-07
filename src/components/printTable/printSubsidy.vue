@@ -26,7 +26,7 @@
         		<td>{{subsidy.Profession}}</td>
         		<td>{{subsidy.CertificateType}}</td>
         		<td>{{subsidy.Level}}</td>
-        		<td>{{subsidy.TrainingPersonCount}}</td>
+        		<td>{{subsidy.TrainingPersonCount}}人</td>
         		<td>{{dataAll}}</td>
         		<td>{{subsidy.Address}}</td>
         	</tr>

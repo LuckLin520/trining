@@ -6,7 +6,7 @@
         	</tr>
         	<tr class="con">
         		<td class="attr">培训机构：</td>
-        		<td>{{classObject.User ? classObject.User.Name : ''}}</td>
+        		<td style="min-width: 60px">{{classObject.User ? classObject.User.Name : ''}}</td>
         		<td class="attr">工种班次：</span></td>
         		<td>{{classObject.TrainingType}}、{{classObject.Name}}</span></td>
         		<td class="attr">开班日期：</span></td>
@@ -17,7 +17,7 @@
         <table width="100%" class="mid">
         	<tr class="con">
         		<td style="width: 2%">序号</td>
-        		<td style="width: 7%">姓名</td>
+        		<td style="min-width: 4em">姓名</td>
         		<td style="width: 3%">性别</td>
         		<td style="width: 5%">民族</td>
         		<td style="width: 5%">文化程度</td>
@@ -28,7 +28,7 @@
         		<td style="width: 10%">证书类型</td>
         		<td style="min-width: 3em">原技术等级</td>
 				<td style="min-width: 3em">培训等级</td>
-        		<td style="min-width: 7em">证书编号</td>
+        		<td>证书编号</td>
         		<td style="width: 15%">家庭住址</td>
         	</tr>
         	<tr class="con" v-for="(item, idx) in studentObject.DataList">
@@ -66,7 +66,16 @@
            return {
            }
         },
+        watch: {
+            studentObject(n,o){
+                console.log(n)
+            },
+            classObject(n,o){
+                console.log(n)
+            }
+        },
         mounted() {
+            console.log(this.classObject)
         }
     }
 </script>

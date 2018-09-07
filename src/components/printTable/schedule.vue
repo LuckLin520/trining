@@ -20,11 +20,11 @@
         </table>
         <table width="100%" class="mid">
         	<tr class="con">
-        		<td style="width: 15%">日期</td>
-        		<td style="width: 20%">授课时间</td>
+        		<td style="width: 10%">日期</td>
+        		<td style="width: 15%">授课时间</td>
         		<td>培训内容</td>
         		<td style="width: 15%">授课形式</td>
-        		<td style="width: 20%">培训教师</td>
+        		<td style="width: 10%">培训教师</td>
         	</tr>
         	<tr class="con" v-for="(item, idx) in scheduleList">
         		<td v-if="(idx+1) % 2 !=0" rowspan="2">{{item.Date}}</td>

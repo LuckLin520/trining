@@ -1,324 +1,364 @@
 <template>
   	<div id="statistics">
         <div class="container">
-            <div class="row filter mt-4">
-				<label class="pt-2">录入时间：</label>
-				<div>
-				  	<div  class="block">
-				    	<el-date-picker
-					    	v-on:change="change_time()"
-					      	v-model="default_time"
-					      	type="daterange"
-					      	align="left"
-					      	unlink-panels
-					      	range-separator="至"
-					      	start-placeholder="开始时间"
-					      	end-placeholder="结束时间"
-					      	:picker-options="pickerOptions2">
-				   		</el-date-picker>
-				  	</div>
-				</div>
+        	<p class="title-search">条件筛选：</p>
+        	<el-row>
+        		<el-col :span="6">
+        			<el-select v-model="userType" clearable placeholder="机构类型">
+					    <el-option
+					      v-for="item in userTypes"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+				</el-col>
+				<el-col :span="6">
+					<el-input
+					  :class="'input-name'"
+					  placeholder="名称"
+					  v-model="userName"
+					  clearable>
+					</el-input>
+				</el-col>
+				<el-col :span="6">
+					<el-select v-model="TrainingType" clearable filterable placeholder="工种">
+					    <el-option
+					      v-for="item in TrainingTypes"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+		        </el-col>
+		        <el-col :span="6">
+					<el-select v-model="level" clearable placeholder="等级">
+					    <el-option
+					      v-for="item in levels"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+				</el-col>
+        	</el-row>
+        	
+        	<el-row>
+				<el-col :span="6">
+					<el-input
+					  :class="'input-name'"
+					  placeholder="班次"
+					  v-model="classIndex"
+					  clearable>
+					</el-input>
+				</el-col>
+				<el-col :span="12">
+					<el-date-picker
+					  value-format="yyyy-MM-dd"
+				      v-model="date"
+				      type="daterange"
+				      align="right"
+				      unlink-panels
+				      range-separator="至"
+				      start-placeholder="开始日期"
+				      end-placeholder="结束日期"
+				      :picker-options="pickerOptions2">
+				    </el-date-picker>
+		        </el-col>
+		        <el-col :span="6">
+					<el-select v-model="state" clearable placeholder="状态">
+					    <el-option
+					      v-for="item in states"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+		        </el-col>
+        	</el-row>
+        	<el-row>
+        		<el-col :span="6" :offset="18">
+					<el-button type="primary" icon="el-icon-search" @click="searchTotal">搜索</el-button>
+		        </el-col>
+        	</el-row>
+
+        	<p class="title-search">查询结果：</p>
+        	<!-- <table width="100%" class="table-total">
+	        	<tr class="con">
+	        		<td>班次</td>
+	        		<td>名称</td>
+	        		<td>开班时间</td>
+	        		<td>结束时间</td>
+	        		<td>培训地址</td>
+	        		<td>专业</td>
+	        		<td>等级</td>
+	        		<td>培训人数</td>
+	        		<td>证书类型</td>
+	        	</tr>
+	        	<tr class="con">
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        		<td>9999</td>
+	        	</tr>
+	        </table> -->
+	        <el-table :data="dataList.slice((currpage - 1) * pagesize, currpage * pagesize)" border style="width: 100%">
+		    	<!-- <el-table-column type="index" label="序号" width="45"></el-table-column> -->
+		        <el-table-column prop="Name" label="班次" width="110"></el-table-column>
+		        <el-table-column prop="CreateUserName" label="名称" width="130"></el-table-column>
+		        <el-table-column prop="TrainingStartDate" label="开班时间" width="95"></el-table-column>
+		        <el-table-column prop="TrainingEndDate" label="结束时间" width="95"></el-table-column>
+		        <el-table-column prop="TrainingAddress" label="培训地址"></el-table-column>
+		        <el-table-column prop="TrainingType" label="专业" width="100"></el-table-column>
+		        <el-table-column prop="TrainingLevel" label="等级" width="95"></el-table-column>
+		        <el-table-column prop="TrainingPersonNumber" label="培训人数" width="50"></el-table-column>
+		        <el-table-column prop="CertificateType" label="证书类型" width="95"></el-table-column>
+		    </el-table>
+			<div class="text-right" style="margin-top: 15px;">
+				<el-pagination background 
+					layout="prev, pager, next, sizes, total, jumper"
+					:page-sizes="[10, 15, 20, 25]"
+					:page-size="pagesize"
+					:total="dataList.length"
+					@current-change="handleCurrentChange" 
+					@size-change="handleSizeChange" 
+					>
+				</el-pagination>
 			</div>
-            <hr>
+	
 
-            <ul class="box_3 row justify-content-between">
-                <li class="col-lg-5">
-                    <header>培训人数</header>
-                    <ul class="box_4 container-fluid">
-                        <li class=" row justify-content-center text-center">
-                            <div class="bg_1">
-                                <div class="title_1">培训人数</div>
-                                <span>{{data_obj.PersonCount.AllCount}}</span>
-                            </div>
-                        </li>
-                        <li class="row justify-content-between text-center">
-                            <div class="bg_2">
-                                <div class="title_1">机构培训数</div>
-                                <span>{{data_obj.PersonCount.AgencyCount}}</span>
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">企业培训数</div>   
-                                <span>{{data_obj.PersonCount.CompanyCount}}</span> 
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">个人补贴数</div>
-                                <span>{{data_obj.PersonCount.SubsidyCount}}</span>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="col-lg-5">
-                    <header>合格率</header>
-                    <ul class="box_4 container-fluid">
-                        <li class=" row justify-content-center text-center">
-                            <div class="bg_1">
-                                <div class="title_1">合格率</div>
-                                <span>{{data_obj.Qualified.AllPassRate}}</span> 
-                            </div>
-                        </li>
-                        <li class="row mt-5 justify-content-between text-center">
-                            <div class="bg_2">
-                                <div class="title_1">机构合格率</div> 
-                                <span>{{data_obj.Qualified.AgencyPassRate}}</span>
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">企业合格率</div>   
-                                <span>{{data_obj.Qualified.CompanyPassRate}}</span> 
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">个人补贴合格率</div> 
-                                <span>{{data_obj.Qualified.SubsidyPassRate}}</span>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="col-lg-5">
-                    <header>结业人数</header>
-                    <ul class="box_4 container-fluid">
-                        <li class=" row justify-content-center text-center">
-                            <div class="bg_1">
-                                <div class="title_1">结业人数</div>
-                                <span>{{data_obj.Closing.AllFinishCount}}</span>
-                            </div>
-                        </li>
-                        <li class="row mt-5 justify-content-between text-center">
-                            <div class="bg_2">
-                                <div class="title_1">机构结业数</div>
-                                <span>{{data_obj.Closing.AgencyFinishCount}}</span>
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">企业结业数</div>   
-                                <span>{{data_obj.Closing.CompanyFinishCount}}</span> 
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">个人结业数</div>
-                                <span>{{data_obj.Closing.SubsidyFinishCount}}</span>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="col-lg-5">
-                    <header>补贴金额</header>
-                    <ul class="box_4 container-fluid">
-                        <li class=" row justify-content-center text-center">
-                            <div class="bg_1">
-                                <div class="title_1">总补贴金额</div>
-                                <span>{{data_obj.Amount.AllPrice}}</span>
-                            </div>
-                        </li>
-                        <li class="row mt-5 justify-content-between text-center">
-                            <div class="bg_2">
-                                <div class="title_1">机构金额</div>
-                                <span>{{data_obj.Amount.AgencyPrice}}</span>
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">企业金额</div>   
-                                <span>{{data_obj.Amount.CompanyPrice}}</span> 
-                            </div>
-                            <div class="bg_2">
-                                <div class="title_1">个人金额</div>
-                                <span>{{data_obj.Amount.SubsidyPrice}}</span>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-
-            <br>
-            <br>
-            <br>
-            <br>
-            
-        </div>            
+        	<p class="title-search">统计：</p>
+        	<table width="100%" class="table-total">
+	        	<tr class="con">
+	        		<td>补贴金额</td>
+	        		<td>通过人数</td>
+	        		<td>通过率</td>
+	        		<td>总补贴金额</td>
+	        		<td>开班数</td>
+	        		<td>培训人数</td>
+	        	</tr>
+	        	<tr class="con">
+	        		<td>{{statistics.SubsidyPrice}}</td>
+	        		<td>{{statistics.PassPersonNum}}</td>
+	        		<td>{{statistics.PersonPassRate}}</td>
+	        		<td>{{statistics.PriceAll}}</td>
+	        		<td>{{statistics.ClassCount}}</td>
+	        		<td>{{statistics.PersonNum}}</td>
+	        	</tr>
+	        </table>
+        </div>
   	</div>
 </template>
 
 <script>
-    import {ajax , DX,dateFtt} from '@/assets/fc'
+    import {ajax , DX, dateFtt} from '@/assets/fc'
     export default {
-        name: '',
-        data(){
-            var new_date=new Date();
-			var Today=new_date.getFullYear()+'-'+(new_date.getMonth()+1)+'-'+new_date.getDate()		//今天
-			var	firstDay=new_date.getFullYear()+'-'+(new_date.getMonth()+1)+'-01' 	//当月第一天
-            return{
-                query_obj:{		//查询参数
-                    // page:1,
-                    // per_page:10,
-                    // user:'',	//登录人的Id
-                    // class_name:'',
-                    startdate:firstDay+" 00:00",
-                    enddate:Today+" 23:59",
-                    // status:'',
-                    // type:0		//0 表示直补
-                },
-                default_time: [firstDay,Today],	//默认时间
-                pickerOptions2: {
-                    shortcuts: [{
-                        text: '最近一个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近三个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }]
-                },
-                data_obj:{
-                    Amount:{},  //金额
-                    Closing:{}, //结业人数
-                    PersonCount:{}, //培训人数
-                    Qualified:{},   //合格率
-                }
-            }
+        data() {
+        	return {
+        		userType: '',
+        		userTypes:[{
+        		// 	value: "",
+        		// 	label: "全部"
+        		// },{
+        			value: "2",
+        			label: "机构"
+        		},{
+        			value: "1",
+        			label: "企业"
+        		},{
+        			value: "3",
+        			label: "个人直补"
+        		}],
+        		userName: '',
+        		TrainingType: '',
+        		TrainingTypes: [],
+        		level: '',
+        		levels: [],
+        		classIndex: '',
+        		state: '',
+        		states: [{
+        		// 	value: "",
+        		// 	label: "全部"
+        		// },{
+        			value: "1",
+        			label: "待审核"
+        		},{
+        			value: "3",
+        			label: "已通过"
+        		},{
+        			value: "2",
+        			label: "未通过"
+        		},{
+        			value: "4",
+        			label: "补贴"
+        		},{
+        			value: "5",
+        			label: "结业"
+        		},{
+        			value: "6",
+        			label: "冻结"
+        		}],
+        		date: [],
+        		pickerOptions2: {
+			        shortcuts: [{
+				        text: '最近一周',
+				        onClick(picker) {
+				              const end = new Date();
+				              const start = new Date();
+				              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+				              picker.$emit('pick', [start, end]);
+				            }
+				    }, {
+			            text: '最近一个月',
+			            onClick(picker) {
+			              const end = new Date();
+			              const start = new Date();
+			              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+			              picker.$emit('pick', [start, end]);
+			            }
+			        }, {
+			            text: '最近三个月',
+			            onClick(picker) {
+			              const end = new Date();
+			              const start = new Date();
+			              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+			              picker.$emit('pick', [start, end]);
+			            }
+			       	}]
+			    },
+			    page: 1,
+			    per_page: 9999,
+			    dataList: [],
+			    currpage: 1,
+			    pagesize: 10,
+			    statistics: {}
+        	}
         },
-        methods:{
-            //选择时间
-           change_time(){
-				this.query_obj.page=1
-				if(this.default_time && this.default_time!=null){
-					this.query_obj.startdate=dateFtt(this.default_time[0],"yyyy-MM-dd")+' 00:00'
-                    this.query_obj.enddate=dateFtt(this.default_time[1],"yyyy-MM-dd")+' 23:59:59';
-                    this.get_data();
-				}else{
-					// this.query_obj.startdate='';
-                    // this.query_obj.enddate='';
-                    this.$message({
-                        showClose: true,
-                        message: '请选择查询时间！',
-                        type: 'error'
-                    });
-                }
+        methods: {
+        	searchTotal() {
+        		var params = {
+        			page: this.page,
+        			per_page: this.per_page,
+        			startdate: this.startdate,
+        			enddate: this.enddate,
+        			type: this.userType,
+        			name: this.userName,
+        			profession: this.TrainingType,
+        			level: this.level,
+        			status: this.state,
+        			batch: this.classIndex
+        		}
+        		// console.log(params)
+        		ajax('get','/statisticsall', params, re => {
+        			re = JSON.parse(re)
+        			if(re.Result){
+        				re.Memory.DataList.forEach(v => {
+        					v.TrainingStartDate = dateFtt(v.TrainingStartDate,'yyyy-MM-dd')
+        					v.TrainingEndDate = dateFtt(v.TrainingEndDate,'yyyy-MM-dd')
+        				})
+        				this.dataList = re.Memory.DataList
+        				console.log(this.dataList)
+        				this.statistics = re.Memory.Statistics
+        			}else{
+        				this.$message({
+				          showClose: true,
+				          message: re.Message,
+				          type: 'warning'
+				        });
+        			}
+        		})
+        	},
+        	//查询
+            getbusinessscope(){
+                ajax('get','/businessscope','',this.businessscope_return);
             },
-            get_data(){
-                ajax('get','/statistics',this.query_obj,this.data_return)
-            },
-            data_return(x){
+            businessscope_return(x){
                 var x=JSON.parse(x)
-                if(x.Result){
-                    this.data_obj=x.Memory
-                }
-                console.log('获取数据',x);
-            }
+                this.TrainingTypes = x.Memory.map(v => {return {value: v.Name, label: v.Name}})
+                // this.TrainingTypes.unshift({value: '', label: '全部'})
+            },
+            subsidystandard(){
+                ajax('get','/subsidystandard','',this.subsidystandard_return)
+            },
+            subsidystandard_return(x){
+                var x=JSON.parse(x);
+                this.levels = x.Memory.map(v => {return {value: v.Name, label: v.Name}})
+                // this.levels.unshift({value: '', label: '全部'})
+            },
+            handleCurrentChange(cpage) {
+				this.currpage = cpage;
+			},
+			handleSizeChange(psize) {
+				this.pagesize = psize;
+			}
+
         },
-        created: function () {
-            
+        computed: {
+        	startdate() {
+        		return this.date ? this.date[0] :  ''
+        	},
+        	enddate() {
+        		return this.date ? this.date[1] :  ''
+        	}
         },
-        mounted: function () {
-            this.get_data()
-            // http://127.0.0.1:2000/v1/statistics?startdate=2017-7-30 16:20:52&enddate=2018-7-30 16:20:52
-        },
+        mounted() {
+        	this.getbusinessscope()
+        	this.subsidystandard()
+        }
+
+
     }
 </script>
 
-<style>
-    #statistics .box_3{
-        display: -webkit-flex;
-        display: flex;
-        flex-wrap: wrap;
+<style scoped>
+	#statistics p.title-search{
+		margin-top: 40px;
+		margin-bottom: 20px;
+		font-size: 18px;
+	}
+	#statistics .el-select{
+		margin-bottom: 20px;
+	}
+	#statistics .el-row{
+		padding: 0 90px;
+	}
+	#statistics .table-total td{
+		text-align: center;
+		border: 1px solid #000;
+        padding: 10px 5px;
+	}
+	.el-date-editor--daterange.el-input, .el-date-editor--daterange.el-input__inner, .el-date-editor--timerange.el-input, .el-date-editor--timerange.el-input__inner {
+    width: 430px;
+	}
+	.el-button{
+		padding: 12px 74px;
+	}
+	.input-name{
+		width: 197px;
+	}
+	.el-table, >>> th{
+        text-align: center;
     }
-    #statistics .box_3>li{
-        /* width: 50% */
-        margin: 70px 0px 0px 0px;
+    .el-table >>> td, .el-table >>> th {
+        padding: 0;
+        
     }
-    #statistics .box_3>li>header{
-        position: relative;
-        padding: 0px 0px 0px 20px;
-        color: #484848;
-    }
-    #statistics .box_3>li>header::after{
-        position: absolute;
-        top: 8px;
-        left: 0px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #2f2ddd;
-        content: "";
-    }
-    #statistics .box_4{
-        position: relative;
-        overflow: hidden;
-        margin: 10px 0px 0px 0px;
-    }
-    #statistics .box_4>li:nth-child(2){
-        margin: 50px 0px 0px 0px;
-    }
-    #statistics .box_4::after{
-        position: absolute;
-        top: 50%;
-        left: 15%;
-        width: 70%;
-        height: 100%;
-        content: '';
-        border: 1px solid #302fe2;
-        border-radius: 5px;
-        z-index: 0;
-    }
-    #statistics .box_4::before{
-        position: absolute;
-        top: 0%;
-        left: 50%;
-        width: 1px;
-        height: 50%;
-        content: '';
-        background: #302fe2;
-        z-index: 0;
-    }
-    #statistics .box_4 .title_1{
-        font-size: 14px;
-    }
-    #statistics .box_4>li>div:not(:nth-child(1)):not(:nth-last-child(1)):after{
-        position: absolute;
-        top: -25px;
-        left: 50%;
-        width: 1px;
-        height: 25px;
-        content: '';
-        background: #302fe2;
-        z-index: 0;
+    .el-table >>> .cell{
+    	display:-webkit-box; 
+	    -webkit-box-orient:vertical;
+	    -webkit-line-clamp:2;
+	    display: -moz-box; 
+	    -moz-line-clamp: 2;
+	    -moz-box-orient: vertical;
+	    overflow: hidden;
     }
 
-    #statistics .box_4 .bg_1,
-    #statistics .box_4 .bg_2{
-        position: relative;
-        z-index: 1;
-        min-width: 110px;
-         padding: 5px 0px;
+    .container{
+    	padding-bottom: 40px;
     }
-    #statistics .box_4 .bg_1{
-        background: #302fe2;
-        color: #ffffff;
-       
-        border-radius: 10px;
-    }
-     #statistics .box_4 .bg_1>span,
-     #statistics .box_4 .bg_2>span{
-         font-weight: bold;
-     }
-    #statistics .box_4 .bg_2{
-        background: #e6e6e6;
-        border-radius: 10px;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 </style>

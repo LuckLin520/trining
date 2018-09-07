@@ -13,16 +13,16 @@
         </table>
         <table width="100%" class="bot">
         	<tr class="con">
-        		<td style="width: 30%">培训班地址</td>
-        		<td style="width: 25%">培训工种</td>
+        		<td>培训班地址</td>
+        		<td>培训工种</td>
         		<td>培训等级</td>
-        		<td><span>拟培训人数</span></td>
+        		<td style="width: 10%">拟培训人数</td>
         	</tr>
         	<tr class="con">
         		<td>{{classListJG.TrainingAddress}}</td>
         		<td>{{classListJG.TrainingType}}</span></td>
         		<td>{{classListJG.TrainingLevel}}</td>
-        		<td>{{classListJG.TrainingPersonNumber}}</span></td>
+        		<td>{{classListJG.TrainingPersonNumber}}人</span></td>
         	</tr>
         	<tr class="con">
         		<td >开班时间</td>
@@ -32,7 +32,7 @@
         	</tr>
         	<tr class="con">
         		<td>{{classListJG.allDate}}</td>
-        		<td>{{classListJG.TrainingDay}}</span></td>
+        		<td>{{classListJG.TrainingDay}}天</span></td>
         		<td>{{classListJG.Contacts}}</td>
         		<td>{{classListJG.ContactNumber}}</span></td>
         	</tr>

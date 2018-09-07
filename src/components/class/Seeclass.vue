@@ -396,8 +396,11 @@
         </section> -->
 
 			<div class="row mb-footer mt-5 d-flex justify-content-center">
-				<button type="button" @click.prevent="retu()" class="mr-5 app-btn rounded-btn">返回</button>
-				<button type="submit" v-if="class_obj.Status==2" class="app-btn" form="wrapForm2">提交审核</button>
+				<!-- <button type="button" @click.prevent="retu()" class="mr-5 app-btn rounded-btn">返回</button> -->
+				<el-button type="info" @click="retu">返回上一页</el-button>
+				<!-- <button type="submit" v-if="class_obj.Status==2" class="app-btn" form="wrapForm2">提交审核</button> -->
+				<el-button type="primary" native-type="submit" v-if="class_obj.Status==2" :form="wrapForm2">提交审核</el-button>
+
 			</div>
 		</section>
     </form>
@@ -466,10 +469,10 @@
 
 import { http, ajax ,dateFtt, PreFixInterge} from "@/assets/fc";
 import "@/assets/css/style.css";
-import PrintClassQY from "@/components/PrintClassQY";
-import PrintClassJG from "@/components/PrintClassJG";
-import PrintSchedule from "@/components/PrintSchedule";
-import PrintStudent from "@/components/PrintStudent";
+// import PrintClassQY from "@/components/PrintClassQY";
+// import PrintClassJG from "@/components/PrintClassJG";
+// import PrintSchedule from "@/components/PrintSchedule";
+// import PrintStudent from "@/components/PrintStudent";
 
 import classJG from "@/components/printTable/classJG";
 import classQY from "@/components/printTable/classQY";
@@ -477,7 +480,10 @@ import schedule from "@/components/printTable/schedule";
 import student from "@/components/printTable/student";
 export default {
   name: "",
-  components: {PrintClassQY, PrintClassJG, PrintSchedule, PrintStudent , classJG, classQY, schedule, student},
+  components: {
+  	// PrintClassQY, PrintClassJG, PrintSchedule, PrintStudent ,
+  	classJG, classQY, schedule, student
+  },
   data() {
     return {
       type_name:['','待审核','未通过','已通过','补贴','结业'],
@@ -934,15 +940,26 @@ export default {
       this.showInfo.change3 = !checkAccount.re;
     },
     doPrint(id) {
-      let subOutputRankPrint = document.getElementById(id);
-      // console.log(subOutputRankPrint.innerHTML);
-      let newContent = subOutputRankPrint.innerHTML;
-      let oldContent = document.body.innerHTML;
-      document.body.innerHTML = newContent;
-      window.print();
-      window.location.reload();
-      document.body.innerHTML = oldContent;
-      return false;
+      var self = this;
+      this.query_obj.per_page = 1000;
+      ajax('get','/student',this.query_obj,(x) => {
+        x=JSON.parse(x);
+        if(x.Result){
+          self.student_obj=x.Memory;
+          self.$nextTick(() => printFn())
+        }
+      })
+      function printFn() {
+        let subOutputRankPrint = document.getElementById(id);
+        // console.log(subOutputRankPrint.innerHTML);
+        let newContent = subOutputRankPrint.innerHTML;
+        let oldContent = document.body.innerHTML;
+        document.body.innerHTML = newContent;
+        window.print();
+        window.location.reload();
+        document.body.innerHTML = oldContent;
+        return false;
+      }
     },
     getStudent() {
       this.query_obj.student_class = this.currentClass;

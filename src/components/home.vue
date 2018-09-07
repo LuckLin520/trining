@@ -153,6 +153,11 @@
 <script>
 	import {ajax,paging,dateFtt} from '@/assets/fc';
 	export default {
+		props: {
+			returnData3: {
+				type: Object
+			}
+		},
 		components: {
 //	    	VueDaterangePicker
 	  	},
@@ -297,6 +302,7 @@
 				if(x!=''){
 					this.getData_obj.page=x;
 					this.getData();	
+					this.$emit("getReturnData3", {tag: this.getData_obj.status, page: x})
 				}
 			},
 			openClass: function() {
@@ -363,16 +369,17 @@
 
 			},
 			//选择课程状态
-			mkCourse: function(tag) {
+			mkCourse: function(tag, page=1) {
 				this.getData_obj.status=tag;
 				this.courseActive = tag;
-				this.getData_obj.page = 1
+				this.getData_obj.page = page
 				this.getData();
+				this.$emit("getReturnData3", {tag, page})
 			},
 			search: function() {
 				this.getData('', '', this.searchString)
 			},
-			getclass2() {
+			getclass2(returnData3) {
 				// 初始化课程状态分类计数
 				this.getData_obj.per_page = 99999;
 				ajax('get','/class', this.getData_obj, (data) => {
@@ -397,7 +404,9 @@
 						return v.Status == 6;
 					}).length;
 					this.getData_obj.per_page = 25;
-				} )
+					this.mkCourse(this.returnData3.tag, this.returnData3.page)
+
+				})
 			}
 
 		},
@@ -416,8 +425,10 @@
 			// this.getData_obj.type=user.Type=='SYSTEM' ? 0 : user.Type;
 			this.getData_obj.type=1 //不是管理员固定为 1 
 			//			console.log(this.userType)
-			this.getData();
-			this.getclass2();
+			// this.getData();
+			console.log(this.returnData3)
+			this.courseActive = this.returnData3.tag
+			this.getclass2(this.returnData3);
 			
 		},
 	}

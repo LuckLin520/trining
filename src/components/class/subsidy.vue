@@ -6,9 +6,7 @@
             </div>
             <div class="mt-2 mb-2">
                  <button type="button" @click="retu()" class="btn btn-sm btn-outline-success">返回上一页</button>
-                <router-link :to="'/addsubsidy?id='+classid" v-if="classsubsidy_list.length<2">
-                    <button class="btn btn-success btn-sm float-right">添加</button>
-                </router-link>
+                 <button class="btn btn-success btn-sm float-right" @click="toAddSubsidy" v-if="classsubsidy_list.length<2">添加</button>
             </div>
             <div>
                 <table class="table table-striped">
@@ -61,7 +59,8 @@ export default {
             user:{},
             classid:'',
             classsubsidy_list:[],
-            Status_lsit:['','待审核','未通过','已通过','']
+            Status_lsit:['','待审核','未通过','已通过',''],
+            finish: 0
 		}
   	},
   	methods:{
@@ -79,6 +78,27 @@ export default {
             var x=JSON.parse(x);
             console.log('查询补贴',x)
             this.classsubsidy_list=x.Memory;
+        },
+        //   student/finish
+        student_finish(){
+            ajax('get','/student/finish',{'class_id':this.classid}, (x) => {
+                x = JSON.parse(x)
+                if (x.Result) {
+                    console.log(x.Memory)
+                    this.finish = x.Memory.length;
+                }
+            })
+        },
+        toAddSubsidy(){
+            if(this.finish){
+                this.$router.push('/addsubsidy?id='+this.classid)
+            }else{
+                this.$message({
+                    showClose: true,
+                    message: '必须有学生已结业才能申请补贴！',
+                    type: 'warning'
+                });
+            }
         }
   	},
     created: function () {
@@ -91,6 +111,7 @@ export default {
             this.get_classsubsidy();
             // this.Status=query.Status;
             // this.get_student()
+            this.student_finish()
 	},
 }
 </script>

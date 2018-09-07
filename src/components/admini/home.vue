@@ -88,10 +88,11 @@
 						<td>{{item.CreateDate.slice(0,10)}}</td>
 						<td>{{item.ReviewUserName}}</td>
 						<td class="text-center">
-							<div style="width:146px;display:inline-block" :class="{'text-left': item.Status == 6 || item.Status == 5}">
+							<div style="width:188px;display:inline-block" :class="{'text-left': item.Status == 6 || item.Status == 5}">
 								<button class="btn btn-info btn-sm" @click="goToReview(item, index)">查看</button>
 								<button class="btn btn-info btn-sm" @click="goToReview_1(item, index)">学生信息</button>
 								<button v-if="item.Status != 6 && item.Status != 5" class="btn btn-info btn-sm" @click="freezeClass(item, index)">冻结</button>
+								<button class="btn btn-sm delete-btn" @click="deleteClass(item)">删除</button>
 							</div>
 						</td>
 					</tr>
@@ -137,6 +138,14 @@
 <script>
 	import {ajax,paging,dateFtt} from '@/assets/fc';
 	export default {
+		props: {
+			returnData: {
+				type: Object
+			},
+			Memory: {
+				type: Object
+			}
+		},
 		components: {
 //	    	VueDaterangePicker
 	  	},
@@ -232,6 +241,7 @@
 				if(x!=''){
 					this.getData_obj.page=x;
 					this.getData();	
+					this.$emit("getReturnData", {tag: this.getData_obj.status, page: x})
 				}
 			},
 			openClass: function() {
@@ -346,49 +356,86 @@
 
 			},
 			//选择课程状态
-			mkCourse: function(tag) {
+			mkCourse: function(tag,page=1) {
 				this.courseActive = tag;
 				this.getData_obj.status=tag
-				this.getData_obj.page = 1
+				this.getData_obj.page = page
 				this.getData();
+				this.$emit("getReturnData", {tag, page: 1})
 			},
 			search: function() {
 				this.getData('', '', this.searchString)
 			},
-			getclass2() {
+			getclass2(Memory,returnData) {
 				// 初始化课程状态分类计数
-				this.getData_obj.per_page = 99999;
-				ajax('get','/class', this.getData_obj, (data) => {
-					data = JSON.parse(data)
-					this.allCount = data.Memory.DataList.length;
-					this.state1Count = data.Memory.DataList.filter(v => {
-						return v.Status == 1;
-					}).length;
-					this.state2Count = data.Memory.DataList.filter(v => {
-						return v.Status == 2;
-					}).length;
-					this.state3Count = data.Memory.DataList.filter(v => {
-						return v.Status == 3;
-					}).length;
-					this.state4Count = data.Memory.DataList.filter(v => {
-						return v.Status == 4;
-					}).length;
-					this.state5Count = data.Memory.DataList.filter(v => {
-						return v.Status == 5;
-					}).length;
-					this.state6Count = data.Memory.DataList.filter(v => {
-						return v.Status == 6;
-					}).length;
-					this.$nextTick(() => {
-						this.mkCourse('1')
+				this.dataList = Memory.DataList.filter(v => {
+					return v.Status == returnData.tag
+				});
+				this.total = this.dataList.length;
+				this.allCount = Memory.DataList.length;
+				this.state1Count = Memory.DataList.filter(v => {
+					return v.Status == 1;
+				}).length;
+				this.state2Count = Memory.DataList.filter(v => {
+					return v.Status == 2;
+				}).length;
+				this.state3Count = Memory.DataList.filter(v => {
+					return v.Status == 3;
+				}).length;
+				this.state4Count = Memory.DataList.filter(v => {
+					return v.Status == 4;
+				}).length;
+				this.state5Count = Memory.DataList.filter(v => {
+					return v.Status == 5;
+				}).length;
+				this.state6Count = Memory.DataList.filter(v => {
+					return v.Status == 6;
+				}).length;
+				this.$emit("getClass", this.state1Count);
+			},
+			deleteClass(item) {
+				var _this = this;
+				this.$confirm('此操作将永久删除该班级所有信息, 是否继续？', '提示', {
+		          confirmButtonText: '确定',
+		          cancelButtonText: '取消',
+		          type: 'warning'
+		        }).then(() => {
+		            setTimeout(() => {
+		            	this.$confirm('包括该班级所有学生及补贴信息都将被永久删除，真的要删除？', '提示', {
+				          confirmButtonText: '确定',
+				          cancelButtonText: '取消',
+				          type: 'warning'
+				        }).then(() => {
+				          	deletefn()
+				        }).catch(() => {
+				          this.$message({
+				            type: 'info',
+				            message: '已取消删除'
+				          });          
+				        });
+		            }, 800)
+		        }).catch(() => {
+		          this.$message({
+		            type: 'info',
+		            message: '已取消删除'
+		          });          
+		        });
+				function deletefn() {
+					ajax('delete','/class', JSON.stringify({Id: item.Id}), (x) => {
+						x = JSON.parse(x)
+						if(x.Result){
+							_this.$alert('删除成功！', {
+					          type: 'success'
+					        })
+						}
 					})
-					this.getData_obj.per_page = 25;
-					this.$emit("getClass", this.state1Count);
-				} )
+				}
 			}
 		},
-		created: function() {
-			
+		watch: {
+			Memory(newV, oldV) {
+				this.getclass2(newV, this.returnData)
+			}
 		},
 		mounted: function() {
 			var user = JSON.parse(localStorage.user0609);
@@ -403,10 +450,15 @@
 			// this.getData_obj.type=user.Type=='SYSTEM' ? 0 : user.Type;		//管理员不填写
 			//			console.log(this.userType)
 			if(this.userType=='SYSTEM' || this.userType==0){
-				this.getData();
-				this.getclass2();
-
+				// this.getData();
+				this.courseActive = this.returnData.tag
+				// console.log(this.returnData)
+				if(this.Memory.DataList){
+					this.getclass2(this.Memory, this.returnData)
+					this.mkCourse(this.returnData.tag, this.returnData.page)
+				}
 			}
+
 			
 			
 		
@@ -432,6 +484,7 @@
 	}
 	#home .my_pagination li.active{
 		color: #2E2EDD;
+		font-weight: bold;
 	}
 	#home .my_pagination li.disabled{
 		color: #9c9c9c;
@@ -482,7 +535,7 @@
 		padding-left: 0!important;
 	}
 	.table td{
-		padding: 5px 0 5px 10px!important;
+		padding: 5px!important;
 	}
 	/* .type_1{
 		color:#2ea7df;
@@ -503,5 +556,10 @@
 	.el-message-box__message textarea{
 		width: 100%;
 		min-height: 115px;
+	}
+
+	.delete-btn{
+		background: #f36a6e;
+		color: #fff;
 	}
 </style>

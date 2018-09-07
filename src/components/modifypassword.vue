@@ -28,7 +28,8 @@
 					</div>
 	                <div class="row mt-4">
 						<div class="col-12 text-center">
-							<button type="submit" class="btn app-btn">提交</button>
+							<!-- <button type="submit" class="btn app-btn">提交</button> -->
+							<el-button type="primary" native-type="submit" :style="'width:112px'">提交</el-button>
 						</div>
                     </div>
                 </form>

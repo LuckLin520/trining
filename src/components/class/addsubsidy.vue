@@ -207,10 +207,14 @@
                     </section>
 
                 <div class="mt-4 text-center mb-5">
-                    <button type="button" @click="retu()" class="app-btn">返回上一页</button>
-                    <button type="submit" v-if="(status=='' || status==2) && !examine" class="app-btn">提交</button>
-                    <button type="button" @click="To_examine(3)" v-if="status==1 && examine" class="app-btn">通过</button>
-                    <button type="button" @click="To_examine(2)" v-if="status==1 && examine" class="app-btn">驳回</button>
+                    <!-- <button type="button" @click="retu()" class="app-btn">返回上一页</button> -->
+                    <el-button type="info" @click="retu">返回上一页</el-button>
+                    <!-- <button type="submit" v-if="(status=='' || status==2) && !examine" class="app-btn">提交</button> -->
+                    <el-button type="primary" native-type="submit" v-if="(status=='' || status==2) && !examine">提交</el-button>
+                    <!-- <button type="button" @click="To_examine(3)" v-if="status==1 && examine" class="app-btn">通过</button> -->
+                    <el-button type="success" @click="To_examine(3)" v-if="status==1 && examine">通过</el-button>
+                    <!-- <button type="button" @click="To_examine(2)" v-if="status==1 && examine" class="app-btn">驳回</button> -->
+                    <el-button type="warning" @click="To_examine(2)" v-if="status==1 && examine">驳回</el-button>
                 </div>
 
             </form>
@@ -245,16 +249,25 @@
             <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printSubsidy')">打印</el-button>
           </div>
         </div>
+        <div v-if="status==3">
+          <div id="printStudent">
+            <student :studentObject="studentObject" :classObject="classObject"></student>
+          </div>
+          <div class="container">
+            <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printSubsidy')">打印</el-button>
+          </div>
+        </div>
 
   	</div>
 </template>
 
 <script>
 import printSubsidy from "@/components/printTable/printSubsidy";
-    import {ajax , DX} from '@/assets/fc'
+import student from "@/components/printTable/student";
+    import {ajax , DX, dateFtt} from '@/assets/fc'
     export default {
         name: '',
-        components: {printSubsidy},
+        components: {printSubsidy,student},
         data(){
             return{
                 user:{},
@@ -293,7 +306,9 @@ import printSubsidy from "@/components/printTable/printSubsidy";
                     change1: false,
                     change2: false,
                 },
-                classInfo: null
+                classInfo: null,
+                studentObject: {},
+                classObject: {}
             }
         },
         methods:{
@@ -340,6 +355,7 @@ import printSubsidy from "@/components/printTable/printSubsidy";
             },
             //添加
             form_1(){
+                
                 var checkPhone = this.checkInput(this.subsidy.ContactNumber, 'phone');
                 var checkCredit = this.checkInput(this.subsidy.ManagerContactNumber, 'phone');
                 for(var re of [checkPhone, checkCredit]){
@@ -385,7 +401,7 @@ import printSubsidy from "@/components/printTable/printSubsidy";
 
                 var x=JSON.parse(x)
 
-                console.log(x);
+                console.log('申请补贴的学生列表：',x);
                 this.student_list=x.Memory;
                 this.subsidy.StudentList=x.Memory;
                 this.subsidy.TrainingPersonCount=x.Memory.length;
@@ -437,6 +453,13 @@ import printSubsidy from "@/components/printTable/printSubsidy";
                 this.subsidy=x.Memory;
                 this.status=x.Memory.Status;
                 this.student_list=x.Memory.StudentList
+                this.studentObject = {DataList: this.student_list}
+                ajax("get", "/class/id", {id: this.classid }, (y) => {
+                    var y=JSON.parse(y)
+                    console.log("班级：",y.Memory)
+                    this.classObject = y.Memory
+                    this.classObject.allDate =  dateFtt(x.Memory.TrainingStartDate,'yyyy-MM-dd')+'至'+dateFtt(x.Memory.TrainingEndDate,'yyyy-MM-dd');
+                });
 
             },
             checkInput(val,reg,info) {

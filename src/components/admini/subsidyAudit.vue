@@ -15,10 +15,10 @@
             </div>
             <div class="row filter_1 mt-4">
 				<label class="pt-1">课程状态：</label>
-				<a href="javascript:void(0)" :class="{'active':query_obj.status==''}" @click="mkCourse('')">全部<span v-if="this.allCount != 0">({{this.allCount}})</span></a>
-				<a href="javascript:void(0)" :class="{'active':query_obj.status=='1', orangeColor: this.state1Count != 0}" @click="mkCourse('1')">审核中<span v-if="this.state1Count != 0">({{this.state1Count}})</span></a>
-				<a href="javascript:void(0)" :class="{'active':query_obj.status=='3', orangeColor: this.state3Count != 0}" @click="mkCourse('3')">已通过<span v-if="this.state3Count != 0">({{this.state3Count}})</span></a>
-				<a href="javascript:void(0)" :class="{'active':query_obj.status=='2', orangeColor: this.state2Count != 0}" @click="mkCourse('2')">未通过<span v-if="this.state2Count != 0">({{this.state2Count}})</span></a>
+				<a href="javascript:void(0)" :class="{'active':returnData2.tag==''}" @click="mkCourse('')">全部<span v-if="this.allCount != 0">({{this.allCount}})</span></a>
+				<a href="javascript:void(0)" :class="{'active':returnData2.tag=='1', orangeColor: this.state1Count != 0}" @click="mkCourse('1')">审核中<span v-if="this.state1Count != 0">({{this.state1Count}})</span></a>
+				<a href="javascript:void(0)" :class="{'active':returnData2.tag=='3', orangeColor: this.state3Count != 0}" @click="mkCourse('3')">已通过<span v-if="this.state3Count != 0">({{this.state3Count}})</span></a>
+				<a href="javascript:void(0)" :class="{'active':returnData2.tag=='2', orangeColor: this.state2Count != 0}" @click="mkCourse('2')">未通过<span v-if="this.state2Count != 0">({{this.state2Count}})</span></a>
 			</div>
             <div class="row filter mt-4">
 				<label class="pt-2">申请时间：</label>
@@ -95,6 +95,11 @@
 <script>
     import {ajax,paging,dateFtt} from '@/assets/fc';
 	export default{
+        props: {
+            returnData2: {
+                type: Object
+            }
+        },
         data(){
    //          var new_date=new Date();
 			// var Today=new_date.getFullYear()+'-'+(new_date.getMonth()+1)+'-'+new_date.getDate()		//今天
@@ -160,15 +165,17 @@
                 // console.log(x)
                 this.$router.push('/addsubsidy?id='+x.Id+'&status=1&examine=1')
             },
-            mkCourse(x){
+            mkCourse(x, page=1){
                 this.query_obj.status=x
-                this.query_obj.page=1
+                this.query_obj.page=page
                 this.get_classsubsidy();
+                this.$emit("getReturnData2", {tag: x, page})
             },
             //分页
             handleCurrentChange(x){
                 this.query_obj.page=x
                 this.get_classsubsidy();
+                this.$emit("getReturnData2", {tag: this.query_obj.status, page: x})
             },
             //选择时间
            change_time(){
@@ -196,7 +203,7 @@
                     this.classsubsidy=x.Memory;
                 }
             },
-            getsubsidy2() {
+            getsubsidy2(returnData2) {
                 this.query_obj.per_page = 99999;
                 ajax('get','/classsubsidy/page',this.query_obj, (data) => {
                     data = JSON.parse(data);
@@ -212,17 +219,18 @@
                     }).length;
                     this.query_obj.per_page = 25;
                     this.$emit("getSubsidy", this.state1Count);
+                    this.mkCourse(returnData2.tag, returnData2.page)
                 })
             }
             
         },
         mounted(){
-            var query=this.$route.query;
-            this.get_classsubsidy();
-            this.getsubsidy2()
-            // this.query_obj.student_class=query.id;
-            // this.get_student()
-        }
+            // var query=this.$route.query;
+            // this.get_classsubsidy();
+            console.log(this.returnData2)
+            this.getsubsidy2(this.returnData2)
+
+        },
     }
 </script>
 <style scoped>

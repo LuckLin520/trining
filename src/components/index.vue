@@ -60,7 +60,16 @@
                 <span class="close_1">{{user.Name}}&emsp;<span @click="exit">退出</span></span>
             </div>
         </div>
-		<router-view @getClass="getClassTodo" @getSubsidy="getSubsidyTodo"></router-view>
+		<router-view @getClass="getClassTodo" 
+					@getSubsidy="getSubsidyTodo" 
+					:returnData="returnData" 
+					@getReturnData="getReturnData"
+					:returnData2="returnData2" 
+					@getReturnData2="getReturnData2"
+					:returnData3="returnData3"
+					@getReturnData3="getReturnData3"
+					:Memory="Memory"
+		></router-view>
   	</div>
 </template>
 
@@ -72,7 +81,20 @@ export default {
   		return{
 			user:{},
 			classTodo: 0,
-			subsidyTodo: 0
+			subsidyTodo: 0,
+			returnData:{
+				tag: 1,
+				page: 1
+			},
+			returnData2:{
+				tag: "",
+				page: 1
+			},
+			returnData3: {
+				tag: "",
+				page: 1
+			},
+			Memory: {}
 		}
   	},
   	methods:{
@@ -93,6 +115,15 @@ export default {
 		getSubsidyTodo(n) {
 			this.subsidyTodo = n;
 		},
+		getReturnData(re) {
+			this.returnData = re;
+		},
+		getReturnData2(re) {
+			this.returnData2 = re;
+		},
+		getReturnData3(re) {
+			this.returnData3 = re;
+		}
   	},
     mounted: function () {
 		if(!localStorage.user0609 && localStorage.user0609!=''){
@@ -104,7 +135,7 @@ export default {
 
 		//课程审核待处理的条数
 		var params1 = { page: 1,
-						per_page: 99999,
+						per_page: 1000,
 						user: '',	
 						class_name: '',
 						startdate:"",
@@ -120,7 +151,7 @@ export default {
 		});
 		//补贴审核待处理的条数
 		var params2 = { page:1,
-						per_page:99999,
+						per_page:1000,
 						user:'',    //用户Id
 						class_name:'',    //班级名称
 						startdate:'',
@@ -134,6 +165,20 @@ export default {
 				this.subsidyTodo = x.Memory.DataList.length;
 			}
 		})
+
+		//获取所有课程
+		var params3 = {page:1,
+						per_page:1000,
+						user:'',	//登录人的Id
+						class_name:'',
+						startdate:"",
+						enddate:"",
+						status:'',
+						type:1		//0直补 1 普通
+					}
+		ajax('get','/class', params3, (data) => {
+			this.Memory = JSON.parse(data).Memory
+		} )
 		
 	},
 }

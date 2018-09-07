@@ -379,8 +379,10 @@
 			<hr>
 
 			<div class="row mb-footer mt-5 d-flex justify-content-center">
-				<button type="button" @click.prevent="retu()" class="mr-5 app-btn rounded-btn">返回</button>
-				<button  v-if="!See" type="submit" class="app-btn" form="wrapForm">{{class_obj.Status == 4 ? '审核已经通过': '提交审核'}}</button>
+				<!-- <button type="button" @click.prevent="retu()" class="mr-5 app-btn rounded-btn">返回</button> -->
+				<el-button type="info" @click="retu">返回上一页</el-button>
+				<!-- <button  v-if="!See" type="submit" class="app-btn" form="wrapForm">{{class_obj.Status == 4 ? '审核已经通过': '提交审核'}}</button> -->
+				<el-button v-if="!See" type="primary" native-type="submit" >{{class_obj.Status == 4 ? '审核已经通过': '提交审核'}}</el-button>
 			</div>
 		</section>
     </form>

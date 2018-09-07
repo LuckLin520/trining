@@ -503,10 +503,14 @@
 			<hr> -->
 
 			<div class="row mb-footer mt-5 d-flex justify-content-center">
-				<button type="button" @click.prevent="retu()" class="mr-5 app-btn rounded-btn">返回</button>
-				<button type="button"  @click.prevent="adopt(3)" v-if="class_obj.Status==1" class="mr-5 app-btn rounded-btn">通过</button>
-				<button type="button" @click.prevent="adopt(2)" v-if="class_obj.Status==1" class="mr-5 app-btn rounded-btn">驳回</button>
-				<button  v-if="user.Type == 'SYSTEM'" type="submit" class="app-btn"  form="wrapForm2">保存修改</button>
+				<!-- <button type="button" @click.prevent="retu()" class="mr-5 app-btn rounded-btn">返回</button> -->
+				<el-button type="info" @click.prevent="retu">返回上一页</el-button>
+				<!-- <button type="button"  @click.prevent="adopt(3)" v-if="class_obj.Status==1" class="mr-5 app-btn rounded-btn">通过</button> -->
+				<el-button type="success" @click.prevent="adopt(3)" v-if="class_obj.Status==1">通过</el-button>
+				<!-- <button type="button" @click.prevent="adopt(2)" v-if="class_obj.Status==1" class="mr-5 app-btn rounded-btn">驳回</button> -->
+				<el-button type="warning" @click.prevent="adopt(2)" v-if="class_obj.Status==1">驳回</el-button>
+				<!-- <button  v-if="user.Type == 'SYSTEM'" type="submit" class="app-btn"  form="wrapForm2">保存修改</button> -->
+				<el-button type="primary" native-type="submit" v-if="user.Type == 'SYSTEM'">保存修改</el-button>
 			</div>
 		</section>
 	</form>
@@ -995,7 +999,7 @@ export default {
         x=JSON.parse(x);
         if(x.Result){
           self.student_obj=x.Memory;
-          printFn()
+          self.$nextTick(() => printFn())
         }
       })
       function printFn() {

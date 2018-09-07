@@ -44,7 +44,7 @@
         		<td>{{classListQY.TrainingAddress}}</td>
         		<td>{{classListQY.TrainingType}}</td>
         		<td>{{classListQY.TrainingLevel}}</td>
-        		<td>{{classListQY.TrainingPersonNumber}}</td>
+        		<td>{{classListQY.TrainingPersonNumber}}人</td>
         	</tr>
         	<tr class="con">
         		<td >开班时间</td>
@@ -54,7 +54,7 @@
         	</tr>
         	<tr class="con">
         		<td>{{classListQY.allDate}}</td>
-        		<td>{{classListQY.TrainingDay}}</td>
+        		<td>{{classListQY.TrainingDay}}天</td>
         		<td>{{classListQY.Contacts}}</td>
         		<td>{{classListQY.ContactNumber}}</td>
         	</tr>

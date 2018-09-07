@@ -104,7 +104,8 @@
                    	<div class="col-12">
                     	<hr class="w-75 mt-5">
 			            <div class="row mb-footer mt-5 d-flex justify-content-center">
-			                <button type="button" @click="ret()" id="myBtn" class="mr-5 app-btn btn" style="background: #ffffff; color: #000000">返回</button>
+			                <!-- <button type="button" @click="ret()" id="myBtn" class="mr-5 app-btn btn" style="background: #ffffff; color: #000000">返回</button> -->
+			                <el-button type="info" @click="ret">返回上一页</el-button>
 			                <!-- <button type="button" class="btn app-btn">提交</button> -->
 			            </div>
                     </div>
