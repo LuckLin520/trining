@@ -247,6 +247,8 @@
           </div>
           <div class="container">
             <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printSubsidy')">打印</el-button>
+            <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('subsidy')">下载</el-button>
+
           </div>
         </div>
         <div v-if="status==3">
@@ -255,6 +257,7 @@
           </div>
           <div class="container">
             <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printSubsidy')">打印</el-button>
+            <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('student')">下载</el-button>
           </div>
         </div>
 
@@ -453,7 +456,7 @@ import student from "@/components/printTable/student";
                 this.subsidy=x.Memory;
                 this.status=x.Memory.Status;
                 this.student_list=x.Memory.StudentList
-                this.studentObject = {DataList: this.student_list}
+                this.studentObject = {DataList: this.student_list, isSubsidy: true}
                 ajax("get", "/class/id", {id: this.classid }, (y) => {
                     var y=JSON.parse(y)
                     console.log("班级：",y.Memory)
@@ -497,6 +500,46 @@ import student from "@/components/printTable/student";
                 return false;
               }
             },
+            dwonload(t) {
+                    var tableToExcel = (function() {
+                        var uri = 'data:application/vnd.ms-excel;base64,'
+                            , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->'+
+                        ' <style type="text/css">'+
+                        '.excelTable  {'+
+                        'border-collapse:collapse;'+
+                        ' border:thin solid #999; '+
+                        '}'+
+                        '   .excelTable  th {'+
+                        '   border: thin solid #999;'+
+                        '  padding:20px;'+
+                        '  text-align: center;'+
+                        '  border-top: thin solid #999;'+
+                        ' '+
+                        '  }'+
+                        ' .excelTable  td{'+
+                        ' border:thin solid #999;'+
+                        '  padding:2px 5px;'+
+                        '  text-align: center;'+
+                        ' }</style>'+'</head><body><table border="1">{table}</table></body></html>'
+                            , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                            , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+                        return function(table, name) {
+                            if (!table.nodeType) table = document.getElementById(table)
+                            var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML};
+                            var downloadLink = document.createElement("a");
+                            downloadLink.href = uri + base64(format(template, ctx));
+                            downloadLink.download = name+".xls";
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                        }
+                    })()
+                    if(t == "subsidy"){
+                        tableToExcel('printSubsidy', this.subsidy.ClassName+'补贴申请表')
+                    }else if(t == "student"){
+                        tableToExcel('student', this.subsidy.ClassName+'补贴学员')
+                    }
+            }
         },
         created: function () {
                 

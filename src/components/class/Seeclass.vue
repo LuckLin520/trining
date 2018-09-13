@@ -431,6 +431,7 @@
         </div>
         <div class="container">
           <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printClassQY')">打印</el-button>
+          <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('class')">下载</el-button>
         </div>
       </div>
       <div  v-if="class_obj.User && class_obj.User.Type == 2">
@@ -439,6 +440,7 @@
         </div>
         <div class="container">
           <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printClassJG')">打印</el-button>
+          <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('class')">下载</el-button>
         </div>
       </div>
       <div v-if="courseData.DataList">
@@ -447,6 +449,7 @@
         </div>
         <div class="container">
           <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printSchedule')">打印</el-button>
+          <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('schedule')">下载</el-button>
         </div>
       </div>
       <div>
@@ -455,6 +458,7 @@
         </div>
         <div class="container">
           <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printStudent')">打印</el-button>
+          <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('student')">下载</el-button>
         </div>
       </div>
     </div>
@@ -987,6 +991,57 @@ export default {
         this.Record.freezeList = x.Memory.filter(v => v.Type == "冻结");
         console.log('返回信息',this.Record)
       })
+    },
+    dwonload(t) {
+    	let doc = ''
+    	if(t == 'class'){//打印申请表
+    		var tableToExcel = (function() {
+			    var uri = 'data:application/vnd.ms-excel;base64,'
+			        , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->'+
+			    ' <style type="text/css">'+
+			    '.excelTable  {'+
+			    'border-collapse:collapse;'+
+			    ' border:thin solid #999; '+
+			    '}'+
+			    '   .excelTable  th {'+
+			    '   border: thin solid #999;'+
+			    '  padding:20px;'+
+			    '  text-align: center;'+
+			    '  border-top: thin solid #999;'+
+			    ' '+
+			    '  }'+
+			    ' .excelTable  td{'+
+			    ' border:thin solid #999;'+
+			    '  padding:2px 5px;'+
+			    '  text-align: center;'+
+			    ' }</style>'+'</head><body><table border="1">{table}</table></body></html>'
+			        , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+			        , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+			    return function(table, name) {
+			        if (!table.nodeType) table = document.getElementById(table)
+			        var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML};
+			        var downloadLink = document.createElement("a");
+			        downloadLink.href = uri + base64(format(template, ctx));
+			        downloadLink.download = name+".xls";
+			        document.body.appendChild(downloadLink);
+			        downloadLink.click();
+			        document.body.removeChild(downloadLink);
+			    }
+			})()
+			let id = ''
+			if(this.class_obj.User && this.class_obj.User.Type == 1){
+				id = 'classQy'
+			}else if(this.class_obj.User && this.class_obj.User.Type == 2){
+				id = 'classJG'
+			}
+			tableToExcel(id, this.class_obj.Name)
+			return;
+    	}else if(t == 'schedule'){
+    		doc = this.class_obj.ScheduleUrl
+    	}else if(t == 'student'){
+    		doc = this.class_obj.StudentUrl
+    	}
+    	location.assign('http://114.55.173.248:2000/'+doc,"_blank")
     }
   },
   watch: {

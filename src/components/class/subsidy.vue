@@ -91,7 +91,21 @@ export default {
         },
         toAddSubsidy(){
             if(this.finish){
-                this.$router.push('/addsubsidy?id='+this.classid)
+                if(this.classsubsidy_list.length == 1){
+                    this.$confirm('此次申请为该班级最后一次申请补贴的机会，是否继续?', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(() => {
+                        this.$router.push('/addsubsidy?id='+this.classid)
+                    }).catch(() => {
+                      this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                      });          
+                    });
+
+                }
             }else{
                 this.$message({
                     showClose: true,

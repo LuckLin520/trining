@@ -88,11 +88,11 @@
 						<td>{{item.CreateDate.slice(0,10)}}</td>
 						<td>{{item.ReviewUserName}}</td>
 						<td class="text-center">
-							<div style="width:188px;display:inline-block" :class="{'text-left': item.Status == 6 || item.Status == 5}">
+							<div style="width:188px;display:inline-block;text-align:center;" >
 								<button class="btn btn-info btn-sm" @click="goToReview(item, index)">查看</button>
 								<button class="btn btn-info btn-sm" @click="goToReview_1(item, index)">学生信息</button>
 								<button v-if="item.Status != 6 && item.Status != 5" class="btn btn-info btn-sm" @click="freezeClass(item, index)">冻结</button>
-								<button class="btn btn-sm delete-btn" @click="deleteClass(item)">删除</button>
+								<button v-if="user.Type == 'SYSTEM'" class="btn btn-sm delete-btn" @click="deleteClass(item)">删除</button>
 							</div>
 						</td>
 					</tr>

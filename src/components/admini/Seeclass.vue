@@ -201,6 +201,23 @@
 			</section>
 			<section class="input-block">
 				<h5 class="title">资料文件</h5>
+				<div v-if="user.Type == 'SYSTEM'" class="row info">
+					<label><span class="text-danger"></span>修改课程: </label>
+					<form class="formPosition"  @submit.prevent="upload2" id="form-2" >
+						<input id="file2" type="file" required @change="uploadChange(2)"/>
+						<button class="btn">上传</button>
+			            <div class="uploadInfo">
+			              <span v-if="uploadInfo.upload2 == 1"><i style="color:#04b980;" class="ok_1 el-icon-success"></i>上传成功</span>
+			              <span v-if="uploadInfo.upload2 == 2" style="color:red">上传失败！</span>
+			              <!-- <span v-if="uploadInfo.upload2 == 0" style="color:red">请上传课程表！</span> -->
+			            </div>
+					</form>
+					<div class="row info">
+						<label>ps:选择文件后记得点击上传哦~</label>
+						<a href="http://114.55.173.248:2000/upload/schedule.xlsx"  class="btn">下载课程表模板</a>
+					</div>
+				</div>
+
 				<div class="row info" >
 					<label>培训人员花名册:</label>
 					<div class="col-12">
@@ -559,6 +576,7 @@
       </div>
       <div class="container">
         <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printClassQY')">打印</el-button>
+        <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('class')">下载</el-button>
       </div>
     </div>
     <div  v-if="class_obj.User && class_obj.User.Type == 2">
@@ -567,6 +585,7 @@
       </div>
       <div class="container">
         <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printClassJG')">打印</el-button>
+        <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('class')">下载</el-button>
       </div>
     </div>
     <div>
@@ -575,6 +594,7 @@
       </div>
       <div class="container">
         <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printSchedule')">打印</el-button>
+        <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('schedule')">下载</el-button>
       </div>
     </div>
 
@@ -584,6 +604,7 @@
       </div>
       <div class="container">
         <el-button style="float:right; margin:10px 0;" type="primary" size="small" @click="doPrint('printStudent')">打印</el-button>
+        <el-button style="float:right; margin:10px;" type="primary" size="small" @click="dwonload('student')">下载</el-button>
       </div>
     </div>
 	<!-- <classJG :classListJG="class_obj"></classJG> -->
@@ -725,6 +746,10 @@ export default {
         change1: false,
         change2: false,
         change3: false
+      },
+      uploadInfo: {
+        upload1: 0,
+        upload2: 0
       },
     };
   },
@@ -963,35 +988,35 @@ export default {
       console.log(x)
       this.student_obj.StudentList=x.Memory.DataList;
     },
-    upload2() {
-      var self = this;
-      var formdata = new FormData();
-      formdata.append("upload", $("#file2")[0].files[0]);
-      $.ajax({
-        type: "post",
-        url: "http://114.55.173.248:2000/upload",
-        data: formdata,
-        cache: false,
-        processData: false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
-        contentType: false, // 不设置Content-type请求头
-        success: function(res) {
-          var data = JSON.parse(res);
-          var class_obj = self.class_obj;
-          self.$set(self.class_obj, "ScheduleUrl", data.Memory);
-          self.$message({
-            message: "上传成功",
-            type: "success"
-          });
-        },
-        error: function(err) {
-          console.log(err);
-          self.$message({
-            message: "上传失败",
-            type: "error"
-          });
-        }
-      });
-    },
+    // upload2() {
+    //   var self = this;
+    //   var formdata = new FormData();
+    //   formdata.append("upload", $("#file2")[0].files[0]);
+    //   $.ajax({
+    //     type: "post",
+    //     url: "http://114.55.173.248:2000/upload",
+    //     data: formdata,
+    //     cache: false,
+    //     processData: false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+    //     contentType: false, // 不设置Content-type请求头
+    //     success: function(res) {
+    //       var data = JSON.parse(res);
+    //       var class_obj = self.class_obj;
+    //       self.$set(self.class_obj, "ScheduleUrl", data.Memory);
+    //       self.$message({
+    //         message: "上传成功",
+    //         type: "success"
+    //       });
+    //     },
+    //     error: function(err) {
+    //       console.log(err);
+    //       self.$message({
+    //         message: "上传失败",
+    //         type: "error"
+    //       });
+    //     }
+    //   });
+    // },
     doPrint(id) {
       var self = this;
       this.query_obj.per_page = 1000;
@@ -1062,6 +1087,94 @@ export default {
       }
       if(this.class_obj.CertificateType == '职业资格等级证书'){
         this.class_obj.TrainingLevel = '初级';
+      }
+    },
+    dwonload(t) {
+    	let doc = ''
+    	if(t == 'class'){//打印申请表
+    		var tableToExcel = (function() {
+			    var uri = 'data:application/vnd.ms-excel;base64,'
+			        , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->'+
+			    ' <style type="text/css">'+
+			    '.excelTable  {'+
+			    'border-collapse:collapse;'+
+			    ' border:thin solid #999; '+
+			    '}'+
+			    '   .excelTable  th {'+
+			    '   border: thin solid #999;'+
+			    '  padding:20px;'+
+			    '  text-align: center;'+
+			    '  border-top: thin solid #999;'+
+			    ' '+
+			    '  }'+
+			    ' .excelTable  td{'+
+			    ' border:thin solid #999;'+
+			    '  padding:2px 5px;'+
+			    '  text-align: center;'+
+			    ' }</style>'+'</head><body><table border="1">{table}</table></body></html>'
+			        , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+			        , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+			    return function(table, name) {
+			        if (!table.nodeType) table = document.getElementById(table)
+			        var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML};
+			        var downloadLink = document.createElement("a");
+			        downloadLink.href = uri + base64(format(template, ctx));
+			        downloadLink.download = name+".xls";
+			        document.body.appendChild(downloadLink);
+			        downloadLink.click();
+			        document.body.removeChild(downloadLink);
+			    }
+			})()
+			let id = ''
+			if(this.class_obj.User && this.class_obj.User.Type == 1){
+				id = 'classQy'
+			}else if(this.class_obj.User && this.class_obj.User.Type == 2){
+				id = 'classJG'
+			}
+			tableToExcel(id, this.class_obj.Name)
+			return;
+    	}else if(t == 'schedule'){
+    		doc = this.class_obj.ScheduleUrl
+    	}else if(t == 'student'){
+    		doc = this.class_obj.StudentUrl
+    	}
+    	location.assign('http://114.55.173.248:2000/'+doc,"_blank")
+    },
+    uploadChange(tag) {
+      this.uploadInfo['upload'+tag] = 0;
+    },
+    upload2() {
+      this.$confirm('重新上传会覆盖原有的课程信息，确认上传？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        closeOnClickModal: false,
+        type: 'warning'
+      }).then(() => {
+        confirmUpload();
+      }).catch(() => {
+        return;
+      });
+      var self = this;
+      function confirmUpload() {
+        var formdata = new FormData();
+        formdata.append("upload", $("#file2")[0].files[0]);
+        $.ajax({
+          type: "post",
+          url: "http://114.55.173.248:2000/upload",
+          data: formdata,
+          cache: false,
+          processData: false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+          contentType: false, // 不设置Content-type请求头
+          success: function(res) {
+            var data = JSON.parse(res);
+            self.$set(self.class_obj, "ScheduleUrl", data.Memory);
+            self.uploadInfo.upload2 = 1;
+          },
+          error: function(err) {
+            console.log(err);
+            self.uploadInfo.upload2 = 2;
+          }
+        });
       }
     },
   },

@@ -2,7 +2,7 @@
     <div id="student" class="container">
         <table width="100%" class="top">
         	<tr>
-        		<td colspan="6"><h3>2018年成都市总工会在职职工<br/>万人免费技能提升培训学员花名册</h3></td>
+        		<td colspan="6"><h3>2018年成都市总工会在职职工<br/>万人免费技能提升培训<span v-if="studentObject.isSubsidy">补贴</span>学员花名册</h3></td>
         	</tr>
         	<tr class="con">
         		<td class="attr">培训机构：</td>
@@ -32,7 +32,7 @@
         		<td style="width: 15%">家庭住址</td>
         	</tr>
         	<tr class="con" v-for="(item, idx) in studentObject.DataList">
-        		<td>{{idx + 1}}</td>
+        		<td>{{item.Sort}}</td>
         		<td>{{item.Name}}</td>
         		<td>{{item.Sex}}</td>
         		<td>{{item.Nation}}</td>
